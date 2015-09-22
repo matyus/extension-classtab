@@ -46,7 +46,9 @@ var contextMenu = chrome.contextMenus;
 contextMenu.create({
   id: ADD_TUNING,
   title: 'Add tuning…',
-  contexts: ['all']
+  contexts: ['link'],
+  documentUrlPatterns: ["http://classtab.org/","http://www.classtab.org/"],
+  targetUrlPatterns: ["*://classtab/*.txt","*://www.classtab.org/*.txt"]
 });
 
 contextMenu.onClicked.addListener(function(menuItem, page) {
