@@ -1,0 +1,17 @@
+{
+  "name": "extension-classtab",
+  "version": "0.0.0",
+  "homepage": "https://github.com/matyus/extension-classtab",
+  "authors": [
+    "michael matyus <michael@maty.us>"
+  ],
+  "main": "background.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

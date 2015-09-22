@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "Classtab Peek",
+  "version": "1.0",
+  "description": "See important information of a tab before clicking on it.",
+  "icons": {
+    "128": "icon_128.png",
+    "16": "icon_16.png"
+  },
+  "background": {
+    "persistent": false,
+    "scripts": ["background.js"]
+  },
+  "permissions": [
+    "http://www.classtab.org/",
+    "contextMenus",
+    "storage",
+    "tabs"
+  ],
+  "content_scripts": [{
+    "matches": ["http://classtab.org/","http://*.classtab.org/"],
+    "js": ["inception.js","bower_components/jquery/dist/jquery.min.js"],
+    "css": ["inception.css"]
+  }]
+}
