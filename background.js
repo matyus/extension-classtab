@@ -2,6 +2,24 @@
 
 console.log('background.js');
 
+var BOOTSTRAP = {
+    "abreu_ticotico.txt": "EADGBe",
+    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l10.txt": "EADGBe",
+    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l12.txt": "EADGBe",
+    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l13.txt": "EADGBe",
+    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l15.txt": "EADGBe",
+    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l18.txt": "EADGBe",
+    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l19.txt": "EADGBe",
+    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l23.txt": "EADGBe",
+    "aguado_op06_p1_l10.txt": "EADGBe",
+    "albeniz_isaac_op047_no5_espanola_asturias.txt": "EADGBe",
+    "albeniz_isaac_op092_no12_piezas_torre_bermeja.txt": "DADGBe",
+    "albeniz_isaac_op165_no2_tango_in_d.txt": "DADGBe",
+    "albeniz_isaac_op165_no5_capricho_catalan.txt": "EADGBe",
+    "albeniz_isaac_op232_no4_cantos_cordoba.txt": "DADGBe",
+    "albeniz_isaac_serenata_arabe.txt": "EADGBe",
+    "albeniz_mateo_sonata_in_d.txt": "DADGBe"
+}
 //constants
 var ADD_TUNING = 'add tuning';
 
@@ -43,7 +61,7 @@ contextMenu.onClicked.addListener(function(menuItem, page) {
       // an example of a single item:
       //    foo_bar.txt : 'EADGBe'
       // (the key is complex)
-      var data = 'tunings' in response ? response.tunings : {};
+      var data = 'tunings' in response ? response.tunings : BOOTSTRAP;
 
       //parse out the filename from `http://www.classtab.org/foo_bar.txt`
       //this is so that we can it easily in the CSS:
@@ -73,11 +91,9 @@ contextMenu.onClicked.addListener(function(menuItem, page) {
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   chrome.storage.local.get('tunings', function(response) {
     //make sure we have something to use
-    if('tunings' in response) {
-      sendResponse({ body: formatDatabaseForCss(response.tunings) });
-    } else {
-      throw new Error('response is malformed: `tunings` key from database not found');
-    }
+    var data = ('tunings' in response) ? response.tunings : BOOTSTRAP;
+
+    sendResponse({ body: formatDatabaseForCss(data) });
   });
 
   //return true if you need async callbacks with onMessage via http://stackoverflow.com/a/20077854
