@@ -1,0 +1,19 @@
+body {
+  background: white;
+  height: 100px;
+  width: 250px;
+}
+
+fieldset {
+  border: none;
+  padding: 0;
+}
+
+
+#add-tuning-button {
+}
+
+input[type="text"] {
+  display: block;
+  margin-bottom: 1em;
+}

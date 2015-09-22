@@ -2,29 +2,15 @@
 
 console.log('background.js');
 
-var BOOTSTRAP = {
-    "abreu_ticotico.txt": "EADGBe",
-    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l10.txt": "EADGBe",
-    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l12.txt": "EADGBe",
-    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l13.txt": "EADGBe",
-    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l15.txt": "EADGBe",
-    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l18.txt": "EADGBe",
-    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l19.txt": "EADGBe",
-    "aguado_nuevo_metodo_para_guitarra_p2_s1_c1_l23.txt": "EADGBe",
-    "aguado_op06_p1_l10.txt": "EADGBe",
-    "albeniz_isaac_op047_no5_espanola_asturias.txt": "EADGBe",
-    "albeniz_isaac_op092_no12_piezas_torre_bermeja.txt": "DADGBe",
-    "albeniz_isaac_op165_no2_tango_in_d.txt": "DADGBe",
-    "albeniz_isaac_op165_no5_capricho_catalan.txt": "EADGBe",
-    "albeniz_isaac_op232_no4_cantos_cordoba.txt": "DADGBe",
-    "albeniz_isaac_serenata_arabe.txt": "EADGBe",
-    "albeniz_mateo_sonata_in_d.txt": "DADGBe"
-}
+//returns Promise, need proper handling.
+var BOOTSTRAP = $.getJSON('tunings.json');
+
 //constants
 var ADD_TUNING = 'add tuning';
+var STANDARD_TUNING = 'EADBGe';
 
 //global functions
-function formatDatabaseForCss(data) {
+function formatDatabaseForCss(data, config) {
   var processedData = [];
   for(var item in data) {
     //this is a little too terse, but basically we're using replace/join instead of catenation.
@@ -33,6 +19,7 @@ function formatDatabaseForCss(data) {
       '{ content: "_" }'.replace('_', data[item])
     ].join(' '));
   }
+
   return processedData.join(" \n\r");
 }
 
@@ -45,7 +32,7 @@ var contextMenu = chrome.contextMenus;
 
 contextMenu.create({
   id: ADD_TUNING,
-  title: 'Add tuning…',
+  title: 'Add/Update tuning…',
   contexts: ['link'],
   documentUrlPatterns: ["http://classtab.org/","http://www.classtab.org/"],
   targetUrlPatterns: ["*://classtab/*.txt","*://www.classtab.org/*.txt"]
@@ -56,7 +43,7 @@ contextMenu.onClicked.addListener(function(menuItem, page) {
   console.log('Menu Item Clicked', menuItem, page, ADD_TUNING == menuItem.menuItemId);
 
   if(menuItem.menuItemId == ADD_TUNING) {
-    var tuningEntered = window.prompt('Add Tuning','EADGBe');
+    var tuningEntered = window.prompt('Add/Update Tuning','EADGBe');
 
     chrome.storage.local.get('tunings', function(response) {
       // `tunings` is the Object name that houses the key/value pairs
@@ -95,10 +82,30 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     //make sure we have something to use
     var data = ('tunings' in response) ? response.tunings : BOOTSTRAP;
 
-    sendResponse({ body: formatDatabaseForCss(data) });
+    sendResponse({ body: formatDatabaseForCss(data, request.config) });
   });
 
   //return true if you need async callbacks with onMessage via http://stackoverflow.com/a/20077854
   return true;
+});
+
+var pageActionRule = {
+  conditions: [
+    new chrome.declarativeContent.PageStateMatcher({
+      pageUrl: {
+        hostContains: '.classtab',
+        urlContains: '.txt'
+      }
+    })
+  ],
+  actions: [
+    new chrome.declarativeContent.ShowPageAction()
+  ]
+};
+
+chrome.runtime.onInstalled.addListener(function(details){
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, function(){
+    chrome.declarativeContent.onPageChanged.addRules([pageActionRule]);
+  });
 });
 

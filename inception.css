@@ -2,6 +2,10 @@
  *This file will be loaded into the DOM of the webpage a user visits because it is included in the manifest.json file as a `content_script`
  */
 
+@-webkit-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@-moz-keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
 body {
   margin-left: 75px;
 }
@@ -10,7 +14,19 @@ a {
   position: relative;
 }
 
-a[href$=".txt"]:before {
+a[href$=".txt"]::before {
+  opacity:0;  /* make things invisible upon start */
+  -webkit-animation:fadeIn ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+  -moz-animation:fadeIn ease-in 1;
+  animation:fadeIn ease-in 1;
+
+  -webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+  -moz-animation-fill-mode:forwards;
+  animation-fill-mode:forwards;
+
+  -webkit-animation-duration:1s;
+  -moz-animation-duration:1s;
+  animation-duration:1s;
   color: #333;
   content: "\0020";
   display: block;
@@ -19,7 +35,7 @@ a[href$=".txt"]:before {
   left: 0;
   letter-spacing: 0.075em;
   margin-left: -62px;
-  margin-top: 1px;
+  margin-top: 0.1em;
   position: absolute;
 }
 

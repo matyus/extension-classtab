@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Classtab Peek",
+  "name": "Classtab Extension",
   "version": "1.0",
-  "description": "See important information of a tab before clicking on it.",
+  "description": "See what tuning a song is in before clicking on it!",
   "icons": {
     "128": "icon_128.png",
     "48": "icon_48.png",
@@ -11,14 +11,24 @@
   },
   "background": {
     "persistent": false,
-    "scripts": ["background.js"]
+    "scripts": [
+      "bower_components/underscore/underscore-min.js",
+      "bower_components/jquery/dist/jquery.min.js",
+      "background.js"
+    ]
   },
   "permissions": [
     "http://www.classtab.org/",
     "contextMenus",
+    "declarativeContent",
     "storage",
     "tabs"
   ],
+  "page_action": {
+    "default_title": "Classtab Extension",
+    "default_icon": "icon_16.png",
+    "default_popup": "window.html"
+  },
   "content_scripts": [{
     "matches": ["http://classtab.org/","http://*.classtab.org/"],
     "js": ["inception.js","bower_components/jquery/dist/jquery.min.js"],
