@@ -6,18 +6,6 @@ console.log('window.js');
 
 $(function(){
   console.log('jquery');
-/*
- *  $('#toggle-standard-tuning').on('change', function(el) {
- *    console.log(el.target.checked);
- *    var config = {};
- *
- *    config.filterStandardTuning = el.target.checked;
- *
- *    chrome.runtime.sendMessage({ config: config }, function(response) {
- *      console.log('callback from background.js', response);
- *    });
- *  });
- */
 
   $('#add-tuning-form').on('submit', function(e){
     e.preventDefault();
