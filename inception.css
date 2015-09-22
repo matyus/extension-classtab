@@ -3,7 +3,7 @@
  */
 
 body {
-  margin-left: 120px;
+  margin-left: 75px;
 }
 
 a {
@@ -11,10 +11,15 @@ a {
 }
 
 a[href$=".txt"]:before {
+  color: #333;
   content: "\0020";
   display: block;
+  font-size: 1em;
+  font-family: monospace;
   left: 0;
-  margin-left: -100px;
+  letter-spacing: 0.075em;
+  margin-left: -62px;
+  margin-top: 1px;
   position: absolute;
 }
 
