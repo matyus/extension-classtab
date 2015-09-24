@@ -3,6 +3,7 @@
   "name": "Classtab Extension",
   "version": "1.0",
   "description": "See what tuning a song is in before clicking on it!",
+  "homepage_url": "https://api.myjson.com/bins/4j2yk",
   "icons": {
     "128": "icon_128.png",
     "48": "icon_48.png",
@@ -12,6 +13,7 @@
   "background": {
     "persistent": false,
     "scripts": [
+      "add-input-to-local-storage.js",
       "bower_components/underscore/underscore-min.js",
       "bower_components/jquery/dist/jquery.min.js",
       "background.js"
@@ -31,7 +33,10 @@
   },
   "content_scripts": [{
     "matches": ["http://classtab.org/","http://*.classtab.org/"],
-    "js": ["inception.js","bower_components/jquery/dist/jquery.min.js"],
+    "js": [
+      "bower_components/jquery/dist/jquery.min.js",
+      "inception.js"
+    ],
     "css": ["inception.css"]
   }]
 }

@@ -2,12 +2,11 @@
 
 console.log('background.js');
 
-//returns Promise, need proper handling.
-var BOOTSTRAP = $.getJSON('tunings.json');
-
 //constants
 var ADD_TUNING = 'add tuning';
 var STANDARD_TUNING = 'EADBGe';
+var DATA; //database
+var DATABASE_URL = chrome.runtime.getManifest().homepage_url; // database url, so hacky!
 
 //global functions
 function formatDatabaseForCss(data, config) {
@@ -38,6 +37,12 @@ contextMenu.create({
   targetUrlPatterns: ["*://classtab/*.txt","*://www.classtab.org/*.txt"]
 });
 
+var onStorageComplete = function(opts) {
+  //update that shit.
+  chrome.tabs.sendMessage(opts.page.id,{ body: formatDatabaseForCss(DATA) }, function(response){
+    console.log('response', response);
+  });
+}
 contextMenu.onClicked.addListener(function(menuItem, page) {
   // handle for when something is chosen in the menu.
   console.log('Menu Item Clicked', menuItem, page, ADD_TUNING == menuItem.menuItemId);
@@ -50,39 +55,40 @@ contextMenu.onClicked.addListener(function(menuItem, page) {
       // an example of a single item:
       //    foo_bar.txt : 'EADGBe'
       // (the key is complex)
-      var data = 'tunings' in response ? response.tunings : BOOTSTRAP;
+      var opts = {
+        menuItem: menuItem,
+        page: page
+      };
 
-      //parse out the filename from `http://www.classtab.org/foo_bar.txt`
-      //this is so that we can it easily in the CSS:
-      // `a[href*="foo_bar.txt"] { content: "EABDGe" }
-      var urlKey = menuItem.linkUrl.split(page.url)[1];
-
-      //create that shit:
-      data[urlKey] = tuningEntered;
-
-      //store that shit:
-      chrome.storage.local.set({'tunings': data}, function(){
-        console.log('%s saved', 'tunings');
-
-        //update that shit.
-        chrome.tabs.sendMessage(page.id,{ body: formatDatabaseForCss(data) }, function(response){
-          console.log('response', response);
+      if('tunings' in response) {
+        DATA = response.tunings;
+        addInputToLocalStorage(tuningEntered, DATA, opts, onStorageComplete);
+      } else {
+        $.getJSON(DATABASE_URL, function(tunings) {
+          DATA = tunings;
+          addInputToLocalStorage(tuningEntered, DATA, opts, onStorageComplete);
         });
-      });
+      }
     });
+
   }
 });
 
-
-
 // Communication between background.js and content_script...
 // runtime.onMessage waits for incoming messages from either the content_script or the browser_action
-chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponseCallback) {
   chrome.storage.local.get('tunings', function(response) {
     //make sure we have something to use
-    var data = ('tunings' in response) ? response.tunings : BOOTSTRAP;
 
-    sendResponse({ body: formatDatabaseForCss(data, request.config) });
+    if('tunings' in response) {
+      DATA = response.tunings;
+      sendResponseCallback({ body: formatDatabaseForCss(DATA, request.config) });
+    } else {
+      $.getJSON(DATABASE_URL, function(tunings) {
+        DATA = tunings;
+        sendResponseCallback({ body: formatDatabaseForCss(DATA, request.config) });
+      });
+    }
   });
 
   //return true if you need async callbacks with onMessage via http://stackoverflow.com/a/20077854
@@ -103,6 +109,7 @@ var pageActionRule = {
   ]
 };
 
+// apparently you need to remove/add per every page change.
 chrome.runtime.onInstalled.addListener(function(details){
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function(){
     chrome.declarativeContent.onPageChanged.addRules([pageActionRule]);

@@ -35,9 +35,10 @@ a[href$=".txt"]::before {
   left: 0;
   letter-spacing: 0.075em;
   margin-left: -62px;
-  margin-top: 0.1em;
+  margin-top: 0.15em;
   position: absolute;
 }
 
 a[href$=".txt"] {
 }
+
